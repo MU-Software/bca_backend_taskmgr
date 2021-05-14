@@ -1,0 +1,4 @@
+boto3
+redis
+psycopg2
+sqlalchemy
