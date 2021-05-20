@@ -1,4 +1,4 @@
 boto3
 redis
-psycopg2
+psycopg2-binary
 sqlalchemy
