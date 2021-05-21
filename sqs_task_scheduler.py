@@ -83,7 +83,7 @@ def get_service_db_session():
     }
 
 
-def apply_changes_on_db(fileobj: tempfile.IO[bytes], changelog: CHANGELOG_TYPE):
+def apply_changes_on_db(fileobj: typing.IO[bytes], changelog: CHANGELOG_TYPE):
     # Create a temporary file and make a db connection to the tempfile
     temp_user_db_engine = sql.create_engine(f'sqlite://{fileobj.name}')
     temp_user_db_session = sqlorm.scoped_session(
@@ -196,7 +196,7 @@ def user_db_modify_worker(events, context):
 
             # TODO: WORKER THAT MODIFIES USER DB MUST BE SEPARATED TO ANOTHER LAMBDA INSTANCE
             # Download user db file to modify
-            user_db_file: tempfile.IO[bytes] = tempfile.NamedTemporaryFile('w+b', delete=True)
+            user_db_file: typing.IO[bytes] = tempfile.NamedTemporaryFile('w+b', delete=True)
             s3_client.download_fileobj(
                 Bucket=S3_BUCKET_NAME,
                 Key=f'/user_db/{db_owner_id}/sync_db.sqlite',
