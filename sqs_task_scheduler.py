@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.append(0, os.path.join(os.path.dirname(__file__), 'packages'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'packages'))
 
 # Dirty flake8 error detection hack
 import boto3  # noqa: E402
