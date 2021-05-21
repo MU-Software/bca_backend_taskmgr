@@ -165,7 +165,6 @@ def apply_changes_on_db(fileobj: typing.IO[bytes], changelog: CHANGELOG_TYPE):
 def user_db_modify_worker(events, context):
     for event in events['Records']:
         # Get task message from event
-        event: dict = json.loads(event)
         task_receipt_handle: str = event['receiptHandle']
         task_hash: str = event['md5OfBody']
         task_body: dict = event['body']
