@@ -123,7 +123,7 @@ def apply_changes_on_db(fileobj: tempfile.IO[bytes], changelog: CHANGELOG_TYPE):
                         new_row = table()
 
                     for column, value in column_value_map.items():
-                        setattr(target_row, column, value)
+                        setattr(new_row, column, value)
 
                     if not is_row_exists:
                         temp_user_db_session.add(new_row)
