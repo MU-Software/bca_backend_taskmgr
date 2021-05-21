@@ -1,18 +1,22 @@
-import boto3
-import datetime
-import json
 import os
-import redis
-import sqlalchemy as sql
-import sqlalchemy.ext.declarative as sqldec
-import sqlalchemy.orm as sqlorm
+import sys
+sys.path.append(0, os.path.join(os.path.dirname(__file__), 'packages'))
+
+# Dirty flake8 error detection hack
+import boto3  # noqa: E402
+import datetime  # noqa: E402
+import json  # noqa: E402
+import redis  # noqa: E402
+import sqlalchemy as sql  # noqa: E402
+import sqlalchemy.ext.declarative as sqldec  # noqa: E402
+import sqlalchemy.orm as sqlorm  # noqa: E402
 # This will write temporary files on /tmp,
 # so It's fine to use this on AWS lambda
-import tempfile
-import traceback
-import typing
+import tempfile  # noqa: E402
+import traceback  # noqa: E402
+import typing  # noqa: E402
 
-import user_db_table
+import user_db_table  # noqa: E402
 
 
 # Constant variables that read from environment
