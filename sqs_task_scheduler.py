@@ -29,7 +29,7 @@ SERVICE_DB = os.environ.get('DB_URL')
 
 SQS_URL: str = os.environ.get('AWS_SQS_URL')
 S3_BUCKET_NAME: str = os.environ.get('AWS_S3_BUCKET_NAME')
-AWS_REGION = os.environ.get('AWS_REGION')
+AWS_REGION = os.environ.get('AWS_REGION', 'ap-northeast-2')
 
 # Constant type definition
 CHANGELOG_TYPE = typing.Dict[str, typing.Dict[str, typing.Dict[str, typing.Dict[str, typing.Any]]]]
@@ -38,7 +38,6 @@ CHANGELOG_TYPE = typing.Dict[str, typing.Dict[str, typing.Dict[str, typing.Dict[
 # Maybe AWS credentials will be applied automatically, I guess?
 s3_client = boto3.client('s3', region_name=AWS_REGION)
 sqs_client = boto3.client('sqs', region_name=AWS_REGION)
-lambda_client = boto3.resource(service_name='lambda', region_name=AWS_REGION)
 
 
 def get_traceback_msg(err):
