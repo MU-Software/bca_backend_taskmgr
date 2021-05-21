@@ -32,7 +32,7 @@ S3_BUCKET_NAME: str = os.environ.get('AWS_S3_BUCKET_NAME')
 AWS_REGION = os.environ.get('AWS_REGION')
 
 # Constant type definition
-CHANGELOG_TYPE = dict[str, dict[str, dict[str, dict[str, typing.Any]]]]
+CHANGELOG_TYPE = typing.Dict[str, typing.Dict[str, typing.Dict[str, typing.Dict[str, typing.Any]]]]
 
 # Reusable resources
 # Maybe AWS credentials will be applied automatically, I guess?
