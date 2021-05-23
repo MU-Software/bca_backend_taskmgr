@@ -198,7 +198,7 @@ def user_db_modify_worker(events, context):
             user_db_file: typing.IO[bytes] = tempfile.NamedTemporaryFile('w+b', delete=True)
             s3_client.download_fileobj(
                 Bucket=S3_BUCKET_NAME,
-                Key=f'/user_db/{db_owner_id}/sync_db.sqlite',
+                Key=f'user_db/{db_owner_id}/sync_db.sqlite',
                 Fileobj=user_db_file)
 
             # Do a modify tasks
@@ -208,7 +208,7 @@ def user_db_modify_worker(events, context):
             s3_client.upload_fileobj(
                 Fileobj=user_db_file,
                 Bucket=S3_BUCKET_NAME,
-                Key=f'/user_db/{db_owner_id}/sync_db.sqlite')
+                Key=f'user_db/{db_owner_id}/sync_db.sqlite')
 
             # Remove mutex on redis
             redis_db.delete(redis_lambda_worker_id)
