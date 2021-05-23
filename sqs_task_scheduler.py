@@ -6,10 +6,12 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'packages'))
 import boto3  # noqa: E402
 import datetime  # noqa: E402
 import json  # noqa: E402
+import pathlib as pt  # noqa: E402
 import redis  # noqa: E402
 import sqlalchemy as sql  # noqa: E402
 import sqlalchemy.ext.declarative as sqldec  # noqa: E402
 import sqlalchemy.orm as sqlorm  # noqa: E402
+import sqlite3  # noqa: E402
 # This will write temporary files on /tmp,
 # so It's fine to use this on AWS lambda
 import tempfile  # noqa: E402
@@ -85,7 +87,8 @@ def get_service_db_session():
 
 def apply_changes_on_db(fileobj: typing.IO[bytes], changelog: CHANGELOG_TYPE):
     # Create a temporary file and make a db connection to the tempfile
-    temp_user_db_engine = sql.create_engine(f'sqlite://{fileobj.name}')
+    temp_user_db_sqlite_conn = sqlite3.connect(fileobj.name)
+    temp_user_db_engine = sql.create_engine('sqlite://', creator=lambda: temp_user_db_sqlite_conn)
     temp_user_db_session = sqlorm.scoped_session(
                                 sqlorm.sessionmaker(
                                     autocommit=False,
@@ -205,10 +208,11 @@ def user_db_modify_worker(events, context):
             apply_changes_on_db(user_db_file, changelog)
 
             # Upload user db file
-            s3_client.upload_fileobj(
-                Fileobj=user_db_file,
-                Bucket=S3_BUCKET_NAME,
-                Key=f'user_db/{db_owner_id}/sync_db.sqlite')
+            user_db_file_pt = pt.Path(user_db_file.name)
+            with user_db_file_pt.open('rb') as fp:
+                s3_client.upload_fileobj(fp,
+                                         S3_BUCKET_NAME,
+                                         f'user_db/{db_owner_id}/sync_db.sqlite')
 
             # Remove mutex on redis
             redis_db.delete(redis_lambda_worker_id)
