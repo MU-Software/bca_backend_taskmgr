@@ -22,7 +22,7 @@ import user_db_table  # noqa: E402
 # Constant variables that read from environment
 REDIS_HOST = os.environ.get('REDIS_HOST')
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
-REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD')
+REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', None)
 REDIS_DB = int(os.environ.get('REDIS_DB', 0))
 
 SERVICE_DB = os.environ.get('DB_URL')
@@ -167,7 +167,7 @@ def user_db_modify_worker(events, context):
         # Get task message from event
         task_receipt_handle: str = event['receiptHandle']
         task_hash: str = event['md5OfBody']
-        task_body: dict = event['body']
+        task_body: dict = json.loads(event['body'])
 
         try:
             db_owner_id: int = task_body['db_owner_id']
