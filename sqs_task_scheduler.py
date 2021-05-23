@@ -1,24 +1,29 @@
+import datetime
+import json
+import logging
 import os
+import pathlib as pt
+import sqlite3
 import sys
+import tempfile
+import traceback
+import typing
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'packages'))
 
 # Dirty flake8 error detection hack
 import boto3  # noqa: E402
-import datetime  # noqa: E402
-import json  # noqa: E402
-import pathlib as pt  # noqa: E402
 import redis  # noqa: E402
 import sqlalchemy as sql  # noqa: E402
 import sqlalchemy.ext.declarative as sqldec  # noqa: E402
 import sqlalchemy.orm as sqlorm  # noqa: E402
-import sqlite3  # noqa: E402
 # This will write temporary files on /tmp,
 # so It's fine to use this on AWS lambda
-import tempfile  # noqa: E402
-import traceback  # noqa: E402
-import typing  # noqa: E402
 
 import user_db_table  # noqa: E402
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 # Constant variables that read from environment
@@ -224,7 +229,7 @@ def user_db_modify_worker(events, context):
 
         except Exception as err:
             try:
-                print(get_traceback_msg(err))
+                logger.error(get_traceback_msg(err))
                 sqs_client.change_message_visibility(
                     QueueUrl=SQS_URL,
                     ReceiptHandle=task_receipt_handle,
