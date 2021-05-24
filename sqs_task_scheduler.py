@@ -134,12 +134,14 @@ def apply_changes_on_db(fileobj: typing.IO[bytes], changelog: CHANGELOG_TYPE):
                         new_row = table()
 
                     for column, value in column_value_map.items():
+                        if value and column.endswith('_at'):
+                            value = datetime.datetime.strptime(value, "%a, %d %b %Y %H:%M:%S GMT")
                         setattr(new_row, column, value)
 
                     if not is_row_exists:
                         temp_user_db_session.add(new_row)
                 elif action == 'modify':
-                    target_row = table.query.filter(table.uuid == uuid).first()
+                    target_row = temp_user_db_session.query(table).filter(table.uuid == uuid).first()
                     if not target_row:
                         # Get this row's whole data from service DB and migrate to User's DB
                         service_db = get_service_db_session()
@@ -149,12 +151,18 @@ def apply_changes_on_db(fileobj: typing.IO[bytes], changelog: CHANGELOG_TYPE):
                             continue
 
                         target_row = table()
-                        target_columns: list[str] = [column_name['name'] for column_name in table.column_descriptions]
-                        for column in target_columns:
-                            value = getattr(query_result, column)
-                            setattr(target_row, column, value)
+                        target_columns: list[str] = [
+                            (column_tb['name'], column_tb['type'])
+                            for column_tb in table.column_descriptions]
+                        for column_name, column_type in target_columns:
+                            value = getattr(query_result, column_name)
+                            if value and column_type == sql.DateTime:
+                                value = datetime.datetime.strptime(value, "%a, %d %b %Y %H:%M:%S GMT")
+                            setattr(target_row, column_name, value)
                     else:
                         for column, value in column_value_map.items():
+                            if value and column.endswith('_at'):
+                                value = datetime.datetime.strptime(value, "%a, %d %b %Y %H:%M:%S GMT")
                             setattr(target_row, column, value)
                 elif action == 'delete':
                     target_row = table.query.filter(table.uuid == uuid).first()
