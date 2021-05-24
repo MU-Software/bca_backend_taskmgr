@@ -171,6 +171,7 @@ def apply_changes_on_db(fileobj: typing.IO[bytes], changelog: CHANGELOG_TYPE):
 
 
 def user_db_modify_worker(events, context):
+    logger.info(events)
     for event in events['Records']:
         # Get task message from event
         task_receipt_handle: str = event['receiptHandle']
@@ -228,15 +229,11 @@ def user_db_modify_worker(events, context):
                 ReceiptHandle=task_receipt_handle)
 
         except Exception as err:
-            try:
-                logger.error(get_traceback_msg(err))
-                sqs_client.change_message_visibility(
-                    QueueUrl=SQS_URL,
-                    ReceiptHandle=task_receipt_handle,
-                    VisibilityTimeout=45)  # Make this task visible again after 45 seconds
-            except Exception:
-                # ??? SOMETHING WENT WRONG ???
-                pass
+            logger.error(get_traceback_msg(err))
+            sqs_client.change_message_visibility(
+                QueueUrl=SQS_URL,
+                ReceiptHandle=task_receipt_handle,
+                VisibilityTimeout=45)  # Make this task visible again after 45 seconds
 
     # Exit this lambda instance as there's no task in queue
     return {
