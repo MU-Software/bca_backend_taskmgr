@@ -126,7 +126,7 @@ def apply_changes_on_db(fileobj: typing.IO[bytes], changelog: CHANGELOG_TYPE):
                 # Do modification job
                 if action == 'add':
                     is_row_exists = False
-                    new_row = table.query.filter(table.uuid == uuid).first()
+                    new_row = temp_user_db_session.query(table).filter(table.uuid == uuid).first()
                     if new_row:
                         # There's a row already inside the User's DB
                         is_row_exists = True
@@ -165,7 +165,7 @@ def apply_changes_on_db(fileobj: typing.IO[bytes], changelog: CHANGELOG_TYPE):
                                 value = datetime.datetime.strptime(value, "%a, %d %b %Y %H:%M:%S GMT")
                             setattr(target_row, column, value)
                 elif action == 'delete':
-                    target_row = table.query.filter(table.uuid == uuid).first()
+                    target_row = temp_user_db_session.query(table).filter(table.uuid == uuid).first()
                     if target_row:
                         temp_user_db_session.delete(target_row)
                 # Do commit on every row changes to prevent unexpected unique_fail error
