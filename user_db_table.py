@@ -1,5 +1,6 @@
 import secrets
 import sqlalchemy as sql
+import sqlalchemy.ext.declarative as sqldec
 
 
 class Profile:
@@ -36,7 +37,6 @@ class Card:
     }
 
     uuid = sql.Column(sql.Integer, primary_key=True, nullable=False)
-    profile_id = sql.Column(sql.Integer, sql.ForeignKey('TB_PROFILE.uuid'), nullable=False)
 
     name = sql.Column(sql.String, nullable=False, unique=True)
     data = sql.Column(sql.String, nullable=False, unique=True)
@@ -48,6 +48,10 @@ class Card:
     deleted_at = sql.Column(sql.DateTime, nullable=True)
     why_deleted = sql.Column(sql.String, nullable=True)
 
+    @sqldec.declared_attr
+    def profile_id(cls):
+        return sql.Column(sql.Integer, sql.ForeignKey('TB_PROFILE.uuid'), nullable=False)
+
 
 class CardSubscription:
     __tablename__ = 'TB_CARD_SUBSCRIPTION'
@@ -57,8 +61,13 @@ class CardSubscription:
 
     uuid = sql.Column(sql.Integer, primary_key=True, nullable=False)
 
-    profile_id = sql.Column(sql.Integer, sql.ForeignKey('TB_PROFILE.uuid'), nullable=False)
-    card_id = sql.Column(sql.Integer, sql.ForeignKey('TB_CARD.uuid'), nullable=False)
-
     commit_id = sql.Column(sql.String, nullable=False, default=secrets.token_hex, onupdate=secrets.token_hex)
     created_at = sql.Column(sql.DateTime, nullable=False, default=sql.func.now())
+
+    @sqldec.declared_attr
+    def profile_id(cls):
+        return sql.Column(sql.Integer, sql.ForeignKey('TB_PROFILE.uuid'), nullable=False)
+
+    @sqldec.declared_attr
+    def card_id(cls):
+        return sql.Column(sql.Integer, sql.ForeignKey('TB_CARD.uuid'), nullable=False)
