@@ -1,6 +1,26 @@
-import secrets
+import datetime
 import sqlalchemy as sql
+import sqlalchemy.types as sqltypes
 import sqlalchemy.ext.declarative as sqldec
+
+
+class UserDBDateTime(sqltypes.TypeDecorator):
+    impl = sqltypes.Integer
+
+    # Python Object to DB
+    def process_bind_param(self, value: datetime.datetime, dialect):
+        if value is not None:
+            value = int(value.timestamp())
+        return value
+
+    # DB to Python Object
+    def process_result_value(self, value: int, dialect):
+        if value is not None:
+            value = datetime.datetime.fromtimestamp(value)
+        return value
+
+    def process_literal_value(self, value, dialect):
+        return super().process_result_value(value, dialect)
 
 
 class Profile:
@@ -11,18 +31,18 @@ class Profile:
 
     uuid = sql.Column(sql.Integer, primary_key=True, nullable=False)
 
-    name = sql.Column(sql.String, nullable=False)  # Profile name shown in list or card
-    email = sql.Column(sql.String, nullable=True)  # Email of Profile
-    phone = sql.Column(sql.String, nullable=True)  # Phone of Profile
-    sns = sql.Column(sql.String, nullable=True)  # SNS Account of profile (in json)
-    description = sql.Column(sql.String, nullable=True)  # Profile description
-    data = sql.Column(sql.String, nullable=False)  # Profile additional data (in json)
+    name = sql.Column(sql.TEXT, nullable=False)  # Profile name shown in list or card
+    email = sql.Column(sql.TEXT, nullable=True)  # Email of Profile
+    phone = sql.Column(sql.TEXT, nullable=True)  # Phone of Profile
+    sns = sql.Column(sql.TEXT, nullable=True)  # SNS Account of profile (in json)
+    description = sql.Column(sql.TEXT, nullable=True)  # Profile description
+    data = sql.Column(sql.TEXT, nullable=False)  # Profile additional data (in json)
 
-    commit_id = sql.Column(sql.String, nullable=False, default=secrets.token_hex, onupdate=secrets.token_hex)
-    created_at = sql.Column(sql.DateTime, nullable=False, default=sql.func.now())
-    modified_at = sql.Column(sql.DateTime, nullable=False, default=sql.func.now(), onupdate=sql.func.now())
-    deleted_at = sql.Column(sql.DateTime, nullable=True)
-    why_deleted = sql.Column(sql.String, nullable=True)
+    commit_id = sql.Column(sql.TEXT, nullable=False)
+    created_at = sql.Column(UserDBDateTime, nullable=False)
+    modified_at = sql.Column(UserDBDateTime, nullable=False)
+    deleted_at = sql.Column(UserDBDateTime, nullable=True)
+    why_deleted = sql.Column(sql.TEXT, nullable=True)
 
     guestbook = sql.Column(sql.Integer, nullable=True)
     announcement = sql.Column(sql.Integer, nullable=True)
@@ -38,15 +58,17 @@ class Card:
 
     uuid = sql.Column(sql.Integer, primary_key=True, nullable=False)
 
-    name = sql.Column(sql.String, nullable=False, unique=True)
-    data = sql.Column(sql.String, nullable=False, unique=True)
-    preview_url = sql.Column(sql.String, nullable=False, unique=True)
+    name = sql.Column(sql.TEXT, nullable=False, unique=True)
+    data = sql.Column(sql.TEXT, nullable=False, unique=True)
+    preview_url = sql.Column(sql.TEXT, nullable=False, unique=True)
 
-    commit_id = sql.Column(sql.String, nullable=False, default=secrets.token_hex, onupdate=secrets.token_hex)
-    created_at = sql.Column(sql.DateTime, nullable=False, default=sql.func.now())
-    modified_at = sql.Column(sql.DateTime, nullable=False, default=sql.func.now(), onupdate=sql.func.now())
-    deleted_at = sql.Column(sql.DateTime, nullable=True)
-    why_deleted = sql.Column(sql.String, nullable=True)
+    commit_id = sql.Column(sql.TEXT, nullable=False)
+    created_at = sql.Column(UserDBDateTime, nullable=False)
+    modified_at = sql.Column(UserDBDateTime, nullable=False)
+    deleted_at = sql.Column(UserDBDateTime, nullable=True)
+    why_deleted = sql.Column(sql.TEXT, nullable=True)
+
+    private = sql.Column(sql.Boolean, nullable=False, default=False)
 
     @sqldec.declared_attr
     def profile_id(cls):
@@ -61,8 +83,8 @@ class CardSubscription:
 
     uuid = sql.Column(sql.Integer, primary_key=True, nullable=False)
 
-    commit_id = sql.Column(sql.String, nullable=False, default=secrets.token_hex, onupdate=secrets.token_hex)
-    created_at = sql.Column(sql.DateTime, nullable=False, default=sql.func.now())
+    commit_id = sql.Column(sql.TEXT, nullable=False)
+    created_at = sql.Column(UserDBDateTime, nullable=False)
 
     @sqldec.declared_attr
     def profile_id(cls):
