@@ -66,7 +66,7 @@ class Profile:
     guestbook = sql.Column(sql.Integer, nullable=True)
     announcement = sql.Column(sql.Integer, nullable=True)
 
-    private = sql.Column(UserDBBoolean, nullable=False, default=False)
+    private = sql.Column(UserDBBoolean, nullable=False, default=0)
 
 
 class Card:
@@ -87,7 +87,7 @@ class Card:
     deleted_at = sql.Column(UserDBDateTime, nullable=True)
     why_deleted = sql.Column(sql.TEXT, nullable=True)
 
-    private = sql.Column(UserDBBoolean, nullable=False, default=False)
+    private = sql.Column(UserDBBoolean, nullable=False, default=0)
 
     @sqldec.declared_attr
     def profile_id(cls):
