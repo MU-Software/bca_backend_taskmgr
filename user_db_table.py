@@ -23,6 +23,25 @@ class UserDBDateTime(sqltypes.TypeDecorator):
         return super().process_result_value(value, dialect)
 
 
+class UserDBBoolean(sqltypes.TypeDecorator):
+    impl = sqltypes.Integer
+
+    # Python Object to DB
+    def process_bind_param(self, value: bool, dialect):
+        if value is not None:
+            value = int(value)
+        return value
+
+    # DB to Python Object
+    def process_result_value(self, value: int, dialect):
+        if value is not None:
+            value = bool(value)
+        return value
+
+    def process_literal_value(self, value, dialect):
+        return super().process_result_value(value, dialect)
+
+
 class Profile:
     __tablename__ = 'TB_PROFILE'
     __table_args__ = {
@@ -47,7 +66,7 @@ class Profile:
     guestbook = sql.Column(sql.Integer, nullable=True)
     announcement = sql.Column(sql.Integer, nullable=True)
 
-    private = sql.Column(sql.Boolean, nullable=False, default=False)
+    private = sql.Column(UserDBBoolean, nullable=False, default=False)
 
 
 class Card:
@@ -68,7 +87,7 @@ class Card:
     deleted_at = sql.Column(UserDBDateTime, nullable=True)
     why_deleted = sql.Column(sql.TEXT, nullable=True)
 
-    private = sql.Column(sql.Boolean, nullable=False, default=False)
+    private = sql.Column(UserDBBoolean, nullable=False, default=False)
 
     @sqldec.declared_attr
     def profile_id(cls):
