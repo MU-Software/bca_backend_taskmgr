@@ -75,7 +75,7 @@ def get_service_db_session():
 
     class CardSubscribed(service_db_base):
         __table__ = sql.Table(
-            'TB_CARD_SUBSCRIBED', service_db_base.metadata,
+            'TB_CARD_SUBSCRIPTION', service_db_base.metadata,
             autoload=True, autoload_with=service_db_engine)
 
     return {
