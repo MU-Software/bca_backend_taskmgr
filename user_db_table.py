@@ -77,7 +77,7 @@ class Card:
 
     uuid = sql.Column(sql.Integer, primary_key=True, nullable=False)
 
-    name = sql.Column(sql.TEXT, nullable=False, unique=True)
+    name = sql.Column(sql.TEXT, nullable=False)
     data = sql.Column(sql.TEXT, nullable=False, unique=True)
     preview_url = sql.Column(sql.TEXT, nullable=False, unique=True)
 
