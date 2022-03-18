@@ -1,7 +1,7 @@
 ![B.Ca title image](./.github/readme/title.png)
 # THIS REPOSITORY IS DEPRECATED!
-Task scheduler was migrated and re-writed to Celery, and merged to the [Main API Server Repository](https://github.com/MU-Software/bca_backend).  
-This repository remains a record of what was used for my graduation project in the past and is no longer working.  
+Task scheduler was migrated and re-written to Celery, and merged to the [Main API Server Repository](https://github.com/MU-Software/bca_backend).  
+This repository remains as a record of what was used for my graduation project in the past and is no longer working.  
 The information below is based on historical information and may not apply today.  
 
 # B.Ca Task Scheduler repository
